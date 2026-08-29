@@ -1,4 +1,7 @@
 using UserProfileManager.Data;
+using Microsoft.Extensions.DependencyInjection;
+using UserProfileManager.Repositories;
+using UserProfileManager.Services;
 
 namespace UserProfileManager;
 
@@ -33,6 +36,14 @@ static class Program
                 MessageBoxIcon.Error);
             return;
         }
+
+        var services = new ServiceCollection();
+        services.AddSingleton(connectionFactory);
+        services.AddSingleton<IUserRepository, UserRepository>();
+        services.AddSingleton<IUserService, UserService>();
+
+        using var serviceProvider = services.BuildServiceProvider();
+        var userService = serviceProvider.GetRequiredService<IUserService>();
 
         Application.Run(new Form1());
     }    
