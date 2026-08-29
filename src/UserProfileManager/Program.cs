@@ -1,16 +1,39 @@
+using UserProfileManager.Data;
+
 namespace UserProfileManager;
 
 static class Program
 {
-    /// <summary>
-    ///  The main entry point for the application.
-    /// </summary>
     [STAThread]
     static void Main()
     {
-        // To customize application configuration such as set high DPI settings or default font,
-        // see https://aka.ms/applicationconfiguration.
         ApplicationConfiguration.Initialize();
+
+        var dataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "UserProfileManager", "Data");
+
+        Directory.CreateDirectory(dataFolder);
+
+        var dbPath = Path.Combine(dataFolder, "users.db");
+        var connectionString = $"Data Source={dbPath};";
+
+        var connectionFactory = new SqliteConnectionFactory(connectionString);
+        var databaseInitializer = new DatabaseInitializer(connectionFactory);
+
+        try
+        {
+            databaseInitializer.InitializeDatabaseAsync().GetAwaiter().GetResult();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                $"The application could not start because the local database could not be initialized.\n\n{ex.Message}",
+                "Startup Error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
+            return;
+        }
+
         Application.Run(new Form1());
     }    
 }
