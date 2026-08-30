@@ -2,6 +2,7 @@ using UserProfileManager.Data;
 using Microsoft.Extensions.DependencyInjection;
 using UserProfileManager.Repositories;
 using UserProfileManager.Services;
+using UserProfileManager.Views;
 
 namespace UserProfileManager;
 
@@ -41,10 +42,11 @@ static class Program
         services.AddSingleton(connectionFactory);
         services.AddSingleton<IUserRepository, UserRepository>();
         services.AddSingleton<IUserService, UserService>();
+        services.AddTransient<MainForm>();
+        services.AddTransient<UserForm>();
 
         using var serviceProvider = services.BuildServiceProvider();
-        var userService = serviceProvider.GetRequiredService<IUserService>();
 
-        Application.Run(new Form1());
+        Application.Run(serviceProvider.GetRequiredService<MainForm>());
     }    
 }
