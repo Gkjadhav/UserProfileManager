@@ -2,4 +2,5 @@
   <Folder Name="/src/">
     <Project Path="src/UserProfileManager/UserProfileManager.csproj" />
   </Folder>
+  <Project Path="tests/UserProfileManager.Tests/UserProfileManager.Tests.csproj" Id="b6f75feb-f527-4b61-998c-a09353db39cb" />
 </Solution>
