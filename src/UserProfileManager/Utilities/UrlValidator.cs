@@ -1,4 +1,6 @@
-﻿namespace UserProfileManager.Utilities
+﻿using System;
+
+namespace UserProfileManager.Utilities
 {
     public static class UrlValidator
     {
@@ -12,9 +14,12 @@
             {
                 return false; // Invalid scheme
             }
-            
-            return uriResult.Scheme == Uri.UriSchemeHttps
-                && uriResult.Host.Contains("linkedin.com", StringComparison.OrdinalIgnoreCase);
+
+            if (!string.Equals(uriResult.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase))
+                return false;
+
+            return string.Equals(uriResult.Host, "linkedin.com", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(uriResult.Host, "www.linkedin.com", StringComparison.OrdinalIgnoreCase);
         }
     }
 }
