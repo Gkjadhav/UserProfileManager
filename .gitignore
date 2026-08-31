@@ -6,3 +6,11 @@ obj/
 packages/
 TestResults/
 *.dbmdl
+
+# MSIX packaging output — never commit the signed package or the private key
+AppPackages/
+*.pfx
+*.msix
+*.msixbundle
+*.assets.cache
+/packaging/UserProfileManager.Package/BundleArtifacts

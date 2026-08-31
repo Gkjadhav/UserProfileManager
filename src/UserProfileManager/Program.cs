@@ -10,7 +10,7 @@ namespace UserProfileManager;
 internal static class Program
 {
     private const string MutexName = @"Global\UserProfileManager_SingleInstance";
-    private const string ApplicationTitle = "UserProfileManager";
+    private const string ApplicationTitle = "User Profile Manager";
 
     [STAThread]
     private static void Main()
