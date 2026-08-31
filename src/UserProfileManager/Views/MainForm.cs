@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using UserProfileManager.Models;
 using UserProfileManager.Presenters;
@@ -10,7 +11,8 @@ public partial class MainForm : Form, IMainView
     private readonly IServiceProvider _serviceProvider;
     private readonly MainPresenter _presenter;
 
-    private const int PageSize = 10;
+    private int _pageSize = 10;
+    private readonly System.Windows.Forms.Timer _pageSizeRecalcTimer;
 
     public event EventHandler<string>? SearchTextChanged;
     public event EventHandler? NextPageRequested;
@@ -27,18 +29,71 @@ public partial class MainForm : Form, IMainView
 
         bindingSourceUsers.DataSource = new List<User>();
 
+        // Debounced so a window drag-resize (many SizeChanged events) or a DPI change
+        // (which relayouts asynchronously, arriving slightly after Shown) settles before
+        // we measure and re-fetch, instead of reacting to every transient size.
+        _pageSizeRecalcTimer = new System.Windows.Forms.Timer(components!) { Interval = 200 };
+        _pageSizeRecalcTimer.Tick += PageSizeRecalcTimer_Tick;
+
         txtSearch.TextChanged += TxtSearch_TextChanged;
         btnPrevious.Click += BtnPrevious_Click;
         btnNext.Click += BtnNext_Click;
         btnNewUser.Click += BtnNewUser_Click;
         dgvUsers.CellContentClick += DgvUsers_CellContentClick;
+        dgvUsers.SizeChanged += DgvUsers_SizeChanged;
 
         Shown += MainForm_Shown;
     }
 
     private async void MainForm_Shown(object? sender, EventArgs e)
     {
+        _pageSize = CalculatePageSize();
         await _presenter.LoadUsersAsync(1, null);
+
+        // The first calculation above has no real row to measure yet, so it estimates
+        // from RowTemplate.Height, which does not reflect DPI/font scaling the way an
+        // actual bound row's Height does. Re-measure now that real rows exist and
+        // self-correct in one extra round trip if the estimate was off.
+        int correctedPageSize = CalculatePageSize();
+        if (correctedPageSize != _pageSize)
+        {
+            _pageSize = correctedPageSize;
+            await _presenter.SetPageSizeAsync(_pageSize);
+        }
+    }
+
+    private void DgvUsers_SizeChanged(object? sender, EventArgs e)
+    {
+        if (WindowState == FormWindowState.Minimized)
+            return;
+
+        _pageSizeRecalcTimer.Stop();
+        _pageSizeRecalcTimer.Start();
+    }
+
+    private async void PageSizeRecalcTimer_Tick(object? sender, EventArgs e)
+    {
+        _pageSizeRecalcTimer.Stop();
+
+        int newPageSize = CalculatePageSize();
+
+        if (newPageSize == _pageSize)
+            return;
+
+        _pageSize = newPageSize;
+        await _presenter.SetPageSizeAsync(_pageSize);
+    }
+
+    private int CalculatePageSize()
+    {
+        int rowHeight = dgvUsers.Rows.Count > 0
+            ? dgvUsers.Rows[0].Height
+            : dgvUsers.RowTemplate.Height;
+
+        int availableHeight = dgvUsers.ClientSize.Height - dgvUsers.ColumnHeadersHeight;
+        int rowsThatFit = availableHeight / rowHeight;
+
+        return Math.Max(5, rowsThatFit);
     }
 
     private void TxtSearch_TextChanged(object? sender, EventArgs e)
@@ -76,13 +131,24 @@ public partial class MainForm : Form, IMainView
             return;
 
         if (e.ColumnIndex != colEdit.Index &&
-            e.ColumnIndex != colDelete.Index)
+            e.ColumnIndex != colDelete.Index &&
+            e.ColumnIndex != colLinkedIn.Index)
         {
             return;
         }
 
         if (dgvUsers.Rows[e.RowIndex].DataBoundItem is not User user)
             return;
+
+        if (e.ColumnIndex == colLinkedIn.Index)
+        {
+            if (!string.IsNullOrWhiteSpace(user.LinkedInProfile))
+            {
+                Process.Start(new ProcessStartInfo(user.LinkedInProfile) { UseShellExecute = true });
+            }
+
+            return;
+        }
 
         if (e.ColumnIndex == colEdit.Index)
         {
@@ -118,10 +184,10 @@ public partial class MainForm : Form, IMainView
     {
         int start = totalCount == 0
             ? 0
-            : ((currentPage - 1) * PageSize) + 1;
+            : ((currentPage - 1) * _pageSize) + 1;
 
         int end = Math.Min(
-            currentPage * PageSize,
+            currentPage * _pageSize,
             totalCount);
 
         lblPagingInfo.Text =

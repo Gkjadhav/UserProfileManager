@@ -37,7 +37,6 @@ partial class MainForm
         DataGridViewCellStyle dataGridViewCellStyle5 = new DataGridViewCellStyle();
         DataGridViewCellStyle dataGridViewCellStyle6 = new DataGridViewCellStyle();
         DataGridViewCellStyle dataGridViewCellStyle7 = new DataGridViewCellStyle();
-        DataGridViewCellStyle dataGridViewCellStyle8 = new DataGridViewCellStyle();
         DataGridViewCellStyle dataGridViewCellStyle9 = new DataGridViewCellStyle();
         DataGridViewCellStyle dataGridViewCellStyle10 = new DataGridViewCellStyle();
         DataGridViewCellStyle dataGridViewCellStyle11 = new DataGridViewCellStyle();
@@ -60,7 +59,7 @@ partial class MainForm
         colUsername = new DataGridViewTextBoxColumn();
         colEmail = new DataGridViewTextBoxColumn();
         colUserInfo = new DataGridViewTextBoxColumn();
-        colLinkedIn = new DataGridViewTextBoxColumn();
+        colLinkedIn = new DataGridViewLinkColumn();
         colCreatedAt = new DataGridViewTextBoxColumn();
         colUpdatedAt = new DataGridViewTextBoxColumn();
         colEdit = new DataGridViewButtonColumn();
@@ -267,10 +266,10 @@ partial class MainForm
         dataGridViewCellStyle4.ForeColor = Color.FromArgb(31, 36, 48);
         colFullName.DefaultCellStyle = dataGridViewCellStyle4;
         colFullName.HeaderText = "FULL NAME";
-        colFullName.MinimumWidth = 300;
+        colFullName.MinimumWidth = 160;
         colFullName.Name = "colFullName";
         colFullName.ReadOnly = true;
-        colFullName.Width = 300;
+        colFullName.Width = 220;
         // 
         // colUsername
         // 
@@ -300,21 +299,26 @@ partial class MainForm
         colUserInfo.DataPropertyName = "UserInfo";
         dataGridViewCellStyle7.ForeColor = Color.FromArgb(138, 147, 163);
         colUserInfo.DefaultCellStyle = dataGridViewCellStyle7;
+        colUserInfo.FillWeight = 35F;
         colUserInfo.HeaderText = "USER INFO";
-        colUserInfo.MinimumWidth = 200;
+        colUserInfo.MinimumWidth = 160;
         colUserInfo.Name = "colUserInfo";
         colUserInfo.ReadOnly = true;
-        // 
+        //
         // colLinkedIn
-        // 
+        //
         colLinkedIn.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
         colLinkedIn.DataPropertyName = "LinkedInProfile";
-        dataGridViewCellStyle8.ForeColor = Color.FromArgb(79, 70, 229);
-        colLinkedIn.DefaultCellStyle = dataGridViewCellStyle8;
+        colLinkedIn.FillWeight = 65F;
         colLinkedIn.HeaderText = "LINKEDIN";
-        colLinkedIn.MinimumWidth = 200;
+        colLinkedIn.LinkBehavior = LinkBehavior.HoverUnderline;
+        colLinkedIn.LinkColor = Color.FromArgb(79, 70, 229);
+        colLinkedIn.MinimumWidth = 260;
         colLinkedIn.Name = "colLinkedIn";
         colLinkedIn.ReadOnly = true;
+        colLinkedIn.TrackVisitedState = false;
+        colLinkedIn.UseColumnTextForLinkValue = false;
+        colLinkedIn.VisitedLinkColor = Color.FromArgb(79, 70, 229);
         // 
         // colCreatedAt
         // 
@@ -427,7 +431,7 @@ partial class MainForm
     private DataGridViewTextBoxColumn colUsername;
     private DataGridViewTextBoxColumn colEmail;
     private DataGridViewTextBoxColumn colUserInfo;
-    private DataGridViewTextBoxColumn colLinkedIn;
+    private DataGridViewLinkColumn colLinkedIn;
     private DataGridViewTextBoxColumn colCreatedAt;
     private DataGridViewTextBoxColumn colUpdatedAt;
     private DataGridViewButtonColumn colEdit;
