@@ -31,8 +31,11 @@ jobs:
           languages: csharp
           build-mode: manual
 
-      - name: Build
-        run: dotnet build --configuration Release
+      - name: Build application
+        run: dotnet build src/UserProfileManager/UserProfileManager.csproj --configuration Release
+
+      - name: Build tests
+        run: dotnet build tests/UserProfileManager.Tests/UserProfileManager.Tests.csproj --configuration Release
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v4

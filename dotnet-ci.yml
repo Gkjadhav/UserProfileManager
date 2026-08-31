@@ -2,11 +2,9 @@ name: .NET CI
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   pull_request:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
   build-and-test:
@@ -24,8 +22,11 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
 
-      - name: Build
-        run: dotnet build --no-restore --configuration Release
+      - name: Build application
+        run: dotnet build src/UserProfileManager/UserProfileManager.csproj --no-restore --configuration Release
+
+      - name: Build tests
+        run: dotnet build tests/UserProfileManager.Tests/UserProfileManager.Tests.csproj --no-restore --configuration Release
 
       - name: Run tests
-        run: dotnet test --no-build --configuration Release
+        run: dotnet test tests/UserProfileManager.Tests/UserProfileManager.Tests.csproj --no-build --configuration Release --collect:"XPlat Code Coverage"
