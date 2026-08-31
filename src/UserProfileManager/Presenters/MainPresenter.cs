@@ -10,7 +10,7 @@ public class MainPresenter
     private readonly IUserService _userService;
 
     private int _currentPage = 1;
-    private const int PageSize = 10;
+    private int _pageSize = 10;
     private string? _searchText;
     private int _totalPages = 1;
 
@@ -25,16 +25,26 @@ public class MainPresenter
         _view.DeleteUserRequested += OnDeleteUserRequested;
     }
 
-    public async Task RefreshAsync() 
+    public async Task RefreshAsync()
     {
         await LoadUsersAsync(_currentPage, _searchText);
-    } 
+    }
+
+    public async Task SetPageSizeAsync(int pageSize)
+    {
+        if (pageSize < 1 || pageSize == _pageSize)
+            return;
+
+        _pageSize = pageSize;
+        _currentPage = 1;
+        await LoadUsersAsync(_currentPage, _searchText);
+    }
 
     public async Task LoadUsersAsync(int page, string? search)
     {
         try
         {
-            var result = await _userService.GetUsersAsync( page, PageSize, search);
+            var result = await _userService.GetUsersAsync( page, _pageSize, search);
 
             if (!result.Success)
             {
