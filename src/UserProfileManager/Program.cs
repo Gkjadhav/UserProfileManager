@@ -40,10 +40,12 @@ internal static class Program
 
         connectionFactory = new SqliteConnectionFactory(connectionString);
         var databaseInitializer = new DatabaseInitializer(connectionFactory);
+        var demoDataSeeder = new DemoDataSeeder(connectionFactory);
 
         try
         {
             databaseInitializer.InitializeDatabaseAsync().GetAwaiter().GetResult();
+            demoDataSeeder.SeedIfEmptyAsync().GetAwaiter().GetResult();
             return true;
         }
         catch (Exception ex)

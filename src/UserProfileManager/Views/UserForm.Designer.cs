@@ -28,6 +28,7 @@ partial class UserForm
     /// </summary>
     private void InitializeComponent()
     {
+        System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UserForm));
         lblFormTitle = new Label();
         lblFullName = new Label();
         txtFullName = new TextBox();
@@ -222,6 +223,7 @@ partial class UserForm
         Controls.Add(btnSave);
         Font = new Font("Segoe UI", 9F);
         FormBorderStyle = FormBorderStyle.FixedDialog;
+        Icon = (Icon)resources.GetObject("$this.Icon");
         MaximizeBox = false;
         MinimizeBox = false;
         Name = "UserForm";
