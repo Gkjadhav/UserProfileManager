@@ -106,7 +106,9 @@ dotnet run --project src/UserProfileManager/UserProfileManager.csproj
 ```
 
 The SQLite database is created automatically on first run at
-`%LOCALAPPDATA%\UserProfileManager\Data\users.db`.
+`%LOCALAPPDATA%\UserProfileManager\Data\users.db`, seeded with 30 demo users so search and
+pagination have something to show immediately — seeding only happens once, the first time the
+`Users` table is empty.
 
 ## Running Tests
 
